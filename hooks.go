@@ -115,7 +115,7 @@ type Hook interface {
 	StoredInflightMessages() ([]storage.Message, error)
 	StoredRetainedMessages() ([]storage.Message, error)
 	StoredSysInfo() (storage.SystemInfo, error)
-	StoredClientByID(id string, username []byte) (string, []storage.Subscription, []storage.Message, error)
+	StoredClientByID(id string, cl *Client) (string, []storage.Subscription, []storage.Message, error)
 }
 
 // HookOptions contains values which are inherited from the server on initialisation.
@@ -682,10 +682,10 @@ func (h *Hooks) OnACLCheck(cl *Client, topic string, write bool) bool {
 }
 
 // StoredClientByID returns the state of the stored client with the given session ID, if any.
-func (h *Hooks) StoredClientByID(id string, username []byte) (oldRemote string, subs []storage.Subscription, msgs []storage.Message, err error) {
+func (h *Hooks) StoredClientByID(id string, cl *Client) (oldRemote string, subs []storage.Subscription, msgs []storage.Message, err error) {
 	for _, hook := range h.GetAll() {
 		if hook.Provides(StoredClientByID) {
-			oldRemote, subs, msgs, err = hook.StoredClientByID(id, username)
+			oldRemote, subs, msgs, err = hook.StoredClientByID(id, cl)
 			if err != nil {
 				h.Log.Error("failed to load client by ID", "error", err, "hook", hook.ID())
 				return
@@ -882,6 +882,6 @@ func (h *HookBase) StoredSysInfo() (v storage.SystemInfo, err error) {
 }
 
 // StoredClientByID returns the state of the stored client with the given session ID, if any.
-func (h *HookBase) StoredClientByID(id string, username []byte) (oldRemote string, subs []storage.Subscription, msgs []storage.Message, err error) {
+func (h *HookBase) StoredClientByID(id string, cl *Client) (oldRemote string, subs []storage.Subscription, msgs []storage.Message, err error) {
 	return
 }

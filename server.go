@@ -603,7 +603,7 @@ func (s *Server) inheritClientSession(pk packets.Packet, cl *Client) bool {
 
 	// Look up a stored client that's not in memory yet:
 	if s.hooks.Provides(StoredClientByID) {
-		oldRemote, subs, msgs, err := s.hooks.StoredClientByID(cl.ID, cl.Properties.Username)
+		oldRemote, subs, msgs, err := s.hooks.StoredClientByID(cl.ID, cl)
 		if err == nil && oldRemote != "" {
 			// Instantiate in-flight messages to deliver:
 			if len(msgs) > 0 {
